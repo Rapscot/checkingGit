@@ -11,5 +11,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener doc:name="Listener" doc:id="dd0d64bd-167f-486a-a7c1-eff159190615" config-ref="HTTP_Listener_config" path="/gitCheck"/>
 		<set-payload value='#["gitCheck"]' doc:name="Set Payload" doc:id="d0024502-8e0d-43b5-8168-502fdd64e044" />
 		<logger level="INFO" doc:name="Logger" doc:id="e70c008e-baf3-407b-b620-e1b65cd4a542" message='#[payload ++ "new Version 1"]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="065e3663-6973-48bd-a07f-0f5ebf37379a" message='#[payload ++ "jenkins Login"]'/>
 	</flow>
 </mule>
