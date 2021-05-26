@@ -11,5 +11,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener doc:name="Listener" doc:id="55fdbdb8-35f2-4337-be1f-5644028706d1" config-ref="HTTP_Listener_config" path="/test"/>
 		<set-payload value='#["asdasdasdasd"]' doc:name="Set Payload" doc:id="596d8218-f2b7-4dc1-882f-bd886653cc9d" />
 		<logger level="INFO" doc:name="Logger" doc:id="3f4168db-4918-4528-b578-cc1fcd9f57b1" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="69220456-246c-44da-b581-265877a12ec0" message='#["hello world"]'/>
 	</flow>
 </mule>
