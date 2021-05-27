@@ -1,16 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="046ec855-eab3-4efc-a6f3-322091358b35" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<flow name="newmulegittestFlow" doc:id="72c2acfb-af36-4cf6-8a14-33925e39ad87" >
 		<http:listener doc:name="Listener" doc:id="55fdbdb8-35f2-4337-be1f-5644028706d1" config-ref="HTTP_Listener_config" path="/test"/>
-		<set-payload value='#["asdasdasdasd"]' doc:name="Set Payload" doc:id="596d8218-f2b7-4dc1-882f-bd886653cc9d" />
-		<logger level="INFO" doc:name="Logger" doc:id="3f4168db-4918-4528-b578-cc1fcd9f57b1" message="#[payload]"/>
-		<logger level="INFO" doc:name="Logger" doc:id="69220456-246c-44da-b581-265877a12ec0" message='#["hello world"]'/>
+		<flow-ref doc:name="Flow Reference" doc:id="7b26b7db-b10a-445b-b257-6edf8eea863d" name="newmulegittestFlow2"/>
+		<parse-template doc:name="Parse Template" doc:id="dafc6ce8-1e59-455b-bccd-f22beaecfd25" location="home.html"/>
+	</flow>
+	<flow name="newmulegittestFlow1" doc:id="38b61bac-6798-42e8-99ef-30b6b8606d75" >
+		<http:listener doc:name="Listener" doc:id="349038d2-c708-4ce1-ba60-b081adddcf8d" config-ref="HTTP_Listener_config" path="/play"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3c4988ee-cbe9-40b5-bc3a-127df0e0b68d" message='#[attributes.queryString]' />
+		<ee:transform doc:name="Transform Message" doc:id="b83f2a5e-eac9-4b2d-9480-6087f4db17fb" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="newVar" ><![CDATA[%dw 2.0
+output application/java
+import * from dw::core::Strings
+---
+substringAfterLast(substringBefore(attributes.queryString, "="), "x")]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<os:retrieve doc:name="Retrieve" doc:id="0bc0097c-81e8-4749-b091-c1d4728016e5" key="storeAllData">
+			<os:default-value ><![CDATA[#["x"]]]></os:default-value>
+		</os:retrieve>
+		<ee:transform doc:name="Transform Message" doc:id="c6eabc7c-072e-4d0e-8cf5-2255d71796a4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import * from dw::core::Strings
+---
+
+if(payload=="x")
+	[1 to 9][0] map(
+	if(vars.newVar==($$+1) as String)
+		("index" ++ $) : "x"
+	else
+		("index" ++ $) : "#"
+)
+else
+	(payload default []) map(
+	if(vars.newVar==($$+1) as String)
+		("index" ++ ($$+1)) : "x"
+	else
+		$
+)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<os:store doc:name="Store" doc:id="79e459a8-ddf4-4cd0-a596-3ab563d2adff" key="storeAllData"/>
+		<logger level="INFO" doc:name="Logger" doc:id="20cc765b-2a7a-401a-b50c-025db3f5ead6" message="#[payload]"/>
+		<parse-template doc:name="Parse Template" doc:id="dfca981b-4af0-47dc-bc26-3a4558ffc552" location="nexAction.html"/>
+	</flow>
+	<flow name="newmulegittestFlow2" doc:id="d1e611b9-3418-4171-85e5-99d61a3393c8" >
+		<os:remove doc:name="Remove" doc:id="32e0f2c9-f9f8-49ac-be93-7aa46af68138" key="storeAllData" />
 	</flow>
 </mule>
