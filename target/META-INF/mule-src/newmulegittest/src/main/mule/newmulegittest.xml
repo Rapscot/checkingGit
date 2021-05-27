@@ -59,6 +59,13 @@ else
 		<parse-template doc:name="Parse Template" doc:id="dfca981b-4af0-47dc-bc26-3a4558ffc552" location="nexAction.html"/>
 	</flow>
 	<flow name="newmulegittestFlow2" doc:id="d1e611b9-3418-4171-85e5-99d61a3393c8" >
-		<os:remove doc:name="Remove" doc:id="32e0f2c9-f9f8-49ac-be93-7aa46af68138" key="storeAllData" />
+		<try doc:name="Try" doc:id="f23301b9-830d-4c69-be0e-d872627893b4" >
+			<os:remove doc:name="Remove" doc:id="32e0f2c9-f9f8-49ac-be93-7aa46af68138" key="storeAllData" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="95b8b422-680c-4508-a2b2-82b535fe3732" >
+					<logger level="INFO" doc:name="Logger" doc:id="523b7125-0eec-4251-9d1a-b006be0c598f" message='#["No key to display"]'/>
+				</on-error-continue>
+			</error-handler>
+		</try>
 	</flow>
 </mule>
