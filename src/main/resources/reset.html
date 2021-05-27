@@ -4,7 +4,7 @@
 <style>
 body{
   background: #212121;
-  color: #666;
+  
 }
 h1{
   text-align: center;
@@ -29,7 +29,7 @@ h1{
   float: left;
   margin: 10px;
   height: 70px;
-  width: 70px;
+  width: 200px;
   font-size: 50px;
   background: #333;
   color: #ccc;
@@ -40,9 +40,9 @@ h1{
 button,input{
   float: left;
   margin: 10px;
-  height: 70px;
-  width: 70px;
-  font-size: 50px;
+  height: 50px;
+  width: 200px;
+  font-size: 20px;
   background: #333;
   color: #ccc;
   list-style: none;
@@ -89,22 +89,16 @@ footer{
 <div class="text-center"id="box">
   <header>
     <h1>Play Tic Tac Toe</h1>
+    <h2><output name = "index1"  id="1">#[vars.result]</output></h2>
   </header>
 
 
 <div id="message"></div>
+
   <ul id="gameBoard">
-  <form action="/play" method="get">
- 
-     <input type="submit" name = "index1" value = # id="1">1</input> 
-  	 <input type="submit" name = "index2" value = # id="2">2</input> 
-     <input type="submit" name = "index3" value = # id="3">3</input> 
-     <input type="submit" name = "index4" value = # id="4">4</input> 
-  	 <input type="submit" name = "index5" value = #  id="5">5</input> 
-     <input type="submit" name = "index6" value = #  id="6">6</input> 
-     <input type="submit" name = "index7" value = #  id="7">7</input> 
-  	 <input type="submit" name = "index8" value = # id="8">8</input> 
-     <input type="submit" name = "index9" value = # id="9">9</input> 
+  <form action="/test" method="get">
+  	  
+     <Button type="submit" id="2">Reset</Button>
   </form> 
   
   </ul>
@@ -112,10 +106,9 @@ footer{
  
 
 </div>
- 
 <footer >
-<h2 >Developer : Abhishek Basu </h2> 
- <h3 >Using MuleSoft ObjectStore Concept</h3> 
+<h3 >Developer : Abhishek Basu </h3> 
+ <h4  >Tic Tac Toe</h4> 
 
 </footer>
 </body>

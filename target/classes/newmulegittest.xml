@@ -17,17 +17,26 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<flow name="newmulegittestFlow1" doc:id="38b61bac-6798-42e8-99ef-30b6b8606d75" >
 		<http:listener doc:name="Listener" doc:id="349038d2-c708-4ce1-ba60-b081adddcf8d" config-ref="HTTP_Listener_config" path="/play"/>
 		<logger level="INFO" doc:name="Logger" doc:id="3c4988ee-cbe9-40b5-bc3a-127df0e0b68d" message='#[attributes.queryString]' />
-		<ee:transform doc:name="Transform Message" doc:id="b83f2a5e-eac9-4b2d-9480-6087f4db17fb" >
-			<ee:message >
+		<ee:transform doc:name="Transform Message" doc:id="b83f2a5e-eac9-4b2d-9480-6087f4db17fb">
+			<ee:message>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="newVar" ><![CDATA[%dw 2.0
+			<ee:variables>
+				<ee:set-variable variableName="newVar"><![CDATA[%dw 2.0
 output application/java
 import * from dw::core::Strings
 ---
 substringAfterLast(substringBefore(attributes.queryString, "="), "x")]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<os:retrieve doc:name="Retrieve" doc:id="ee1fb4a1-5704-43fa-87a8-0587c871f831" key="incrementVar">
+			<os:default-value ><![CDATA[0]]></os:default-value>
+		</os:retrieve>
+		<logger level="INFO" doc:name="Logger" doc:id="fd0c2eac-e9b4-4d45-997f-b9193b341b56" message="#[payload]"/>
+		<set-variable value="#[sum([payload as Number, 1])]" doc:name="Set Variable" doc:id="1c667d36-d2f0-489b-b3d4-11ddaa8d370f" variableName="increment"/>
+		<os:store doc:name="Store" doc:id="76c7f613-ab9f-49e9-9aa8-03cac31fbbb1" key="incrementVar">
+			<os:value ><![CDATA[#[vars.increment]]]></os:value>
+		</os:store>
+		<logger level="INFO" doc:name="Logger" doc:id="5fc210df-c0bf-4f55-b5de-20c86822f077" message="#[vars.newVar]"/>
 		<os:retrieve doc:name="Retrieve" doc:id="0bc0097c-81e8-4749-b091-c1d4728016e5" key="storeAllData">
 			<os:default-value ><![CDATA[#["x"]]]></os:default-value>
 		</os:retrieve>
@@ -41,26 +50,82 @@ import * from dw::core::Strings
 if(payload=="x")
 	[1 to 9][0] map(
 	if(vars.newVar==($$+1) as String)
-		("index" ++ $) : "x"
+		("index" ++ $) : "X"
 	else
 		("index" ++ $) : "#"
 )
 else
 	(payload default []) map(
 	if(vars.newVar==($$+1) as String)
-		("index" ++ ($$+1)) : "x"
+		if(isOdd(vars.increment))
+			("index" ++ ($$+1)) : "X"
+		else
+			("index" ++ ($$+1)) : "O"
 	else
 		$
 )]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<os:store doc:name="Store" doc:id="79e459a8-ddf4-4cd0-a596-3ab563d2adff" key="storeAllData"/>
+		<ee:transform doc:name="Transform Message" doc:id="d8ee24e6-6e45-4642-bb3f-35f7808e0fd7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload reduce ($$ ++ $)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="20cc765b-2a7a-401a-b50c-025db3f5ead6" message="#[payload]"/>
-		<parse-template doc:name="Parse Template" doc:id="dfca981b-4af0-47dc-bc26-3a4558ffc552" location="nexAction.html"/>
+		<ee:transform doc:name="Transform Message" doc:id="72dca0f4-af8a-4c32-88a4-eb1d618d2aaa" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="result" ><![CDATA[%dw 2.0
+output application/java
+---
+if((payload.index1 as String ++ payload.index2 as String ++ payload.index3 as String) ==  "XXX" 
+		or (payload.index1 ++ payload.index4 ++ payload.index7) ==  "XXX"
+		or (payload.index1 ++ payload.index5 ++ payload.index9) ==  "XXX"
+		or (payload.index5 ++ payload.index2 ++ payload.index8) ==  "XXX"
+		or (payload.index6 ++ payload.index9 ++ payload.index3) ==  "XXX"
+		or (payload.index5 ++ payload.index7 ++ payload.index3) ==  "XXX"
+		or (payload.index8 ++ payload.index7 ++ payload.index9) ==  "XXX"
+		or (payload.index5 ++ payload.index4 ++ payload.index6) ==  "XXX"
+		
+)
+	"1st Player Wins"
+else if( (payload.index1 ++ payload.index2 ++ payload.index3) ==  "OOO" 
+		or (payload.index1 ++ payload.index4 ++ payload.index7) ==  "OOO"
+		or (payload.index1 ++ payload.index5 ++ payload.index9) ==  "OOO"
+		or (payload.index5 ++ payload.index2 ++ payload.index8) ==  "OOO"
+		or (payload.index6 ++ payload.index9 ++ payload.index3) ==  "OOO"
+		or (payload.index5 ++ payload.index7 ++ payload.index3) ==  "OOO"
+		or (payload.index8 ++ payload.index7 ++ payload.index9) ==  "OOO"
+		or (payload.index5 ++ payload.index4 ++ payload.index6) ==  "OOO")	
+		"2nd Player Wins"
+else
+	if(vars.increment==9)
+		"Draw "
+	else
+		"Play"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="f261c3b1-0a49-4c04-a9c8-f540140aafef" >
+			<when expression='#[vars.result=="Play"]'>
+				<parse-template doc:name="Parse Template" doc:id="dfca981b-4af0-47dc-bc26-3a4558ffc552" location="nexAction.html" />
+			</when>
+			<when expression='#[vars.result=="1st Player Wins" or vars.result=="2nd Player Wins"]'>
+				<parse-template doc:name="Parse Template" doc:id="aedae11f-3d19-4faa-a4c9-544c53c676dd" location="reset.html"/>
+			</when>
+			<otherwise >
+				<parse-template doc:name="Parse Template" doc:id="20462aaf-a949-47e5-8a5b-9691b3ded7fb" location="reset.html"/>
+			</otherwise>
+		</choice>
 	</flow>
 	<flow name="newmulegittestFlow2" doc:id="d1e611b9-3418-4171-85e5-99d61a3393c8" >
 		<try doc:name="Try" doc:id="f23301b9-830d-4c69-be0e-d872627893b4" >
 			<os:remove doc:name="Remove" doc:id="32e0f2c9-f9f8-49ac-be93-7aa46af68138" key="storeAllData" />
+			<os:remove doc:name="Remove" doc:id="52a3dc69-a210-44a4-8cbe-240ae215346e" key="incrementVar"/>
 			<error-handler >
 				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="95b8b422-680c-4508-a2b2-82b535fe3732" >
 					<logger level="INFO" doc:name="Logger" doc:id="523b7125-0eec-4251-9d1a-b006be0c598f" message='#["No key to display"]'/>

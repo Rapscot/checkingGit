@@ -13,6 +13,7 @@
       "exportedPackages": [],
       "exportedResources": [
         "log4j2.xml",
+        "reset.html",
         "home.html",
         "newmulegittest.xml",
         "nexAction.html"
