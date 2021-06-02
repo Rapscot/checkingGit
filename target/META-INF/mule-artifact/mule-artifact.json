@@ -1,5 +1,6 @@
 {
   "configs": [
+    "testraml.xml",
     "newmulegittest.xml"
   ],
   "secureProperties": [],
@@ -17,7 +18,16 @@
         "home.html",
         "newmulegittest.xml",
         "test.yaml",
-        "nexAction.html"
+        "nexAction.html",
+        "testraml.xml",
+        "api/traits/errorTrait.raml",
+        "api/example/400.json",
+        "api/example/getRec.json",
+        "api/example/401.json",
+        "api/example/recordResponse.json",
+        "api/example/addrecord.json",
+        "api/testraml.raml",
+        "api/security_schema/securityScheme.raml"
       ]
     }
   },
