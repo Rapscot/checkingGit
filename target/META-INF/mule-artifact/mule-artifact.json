@@ -15,6 +15,7 @@
       "exportedResources": [
         "log4j2.xml",
         "reset.html",
+        "httpsListn.jks",
         "home.html",
         "newmulegittest.xml",
         "test.yaml",
